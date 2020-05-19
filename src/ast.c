@@ -9,6 +9,24 @@
 #include "ast.h"
 #include "utils.h"
 
+ast_t *ast_new_integer (long val)
+{
+  ast_t *ast = malloc(sizeof(ast_t));
+  ast->type = AST_INTEGER;
+  ast->integer = val;
+  return ast;
+}
+
+ast_t *ast_new_binary (ast_binary_e op, ast_t *left, ast_t *right)
+{
+  ast_t *ast = malloc(sizeof(ast_t));
+  ast->type = AST_BINARY;
+  ast->binary.op = op;
+  ast->binary.left = left;
+  ast->binary.right = right;
+  return ast;
+}
+
 char *ast_get_var_type (ast_t *ast) {
   if (ast->type != AST_VARIABLE) return "";
   if (ast->var.type == AST_INTEGER) {
