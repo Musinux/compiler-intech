@@ -12,11 +12,11 @@ stack_item_t *stack_new_item (void *data)
   item->next = NULL;
   return item;
 }
-bool stack_isempty (stack_t stack)
+bool stack_isempty (mystack_t stack)
 {
   return !stack;
 }
-void stack_push (stack_t *stack, void *data)
+void stack_push (mystack_t *stack, void *data)
 {
   assert(stack != NULL);
   stack_item_t *item = stack_new_item(data);
@@ -28,7 +28,7 @@ void stack_push (stack_t *stack, void *data)
   *stack = item;
 }
 
-void *stack_pop (stack_t *stack)
+void *stack_pop (mystack_t *stack)
 {
   assert(stack != NULL);
   assert(*stack != NULL);
@@ -39,12 +39,12 @@ void *stack_pop (stack_t *stack)
   return data;
 }
 
-void *stack_top (stack_t stack)
+void *stack_top (mystack_t stack)
 {
   return stack->data;
 }
 
-int stack_count (stack_t stack)
+int stack_count (mystack_t stack)
 {
   if (!stack) return 0;
   return stack_count(stack->next) + 1;
