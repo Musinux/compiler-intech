@@ -8,6 +8,7 @@
 #include "ast.h"
 #include "parser.h"
 #include "utils.h"
+#include "lexer.h"
 
 
 symbol_t *global_table = NULL;
@@ -25,6 +26,25 @@ int suffix (const char *buffer, const char *endswith) {
   size_t e_len = strlen(endswith);
   if (b_len < e_len) return 1;
   return strcmp(&buffer[b_len - e_len], endswith);
+}
+
+/**
+ * Useless function to delete afterwards
+ * only for tests
+ */
+void test_stuff (buffer_t *buffer)
+{
+  buf_skipblank(buffer);
+  buf_print(buffer);
+  char moncaractere = buf_getchar(buffer);
+  printf("moncaractère: '%c'\n", moncaractere);
+  moncaractere = buf_getchar(buffer);
+  printf("moncaractère (v2): '%c'\n", moncaractere);
+
+  buf_print(buffer);
+  // Vous pouvez ajouter toutes vos fonctions de test
+  char *lexem = lexer_getalphanum_rollback(buffer);
+  printf("variable trouvée: %s\n", lexem);
 }
 
 int main (int argc, char **argv)
@@ -47,6 +67,9 @@ int main (int argc, char **argv)
   buffer_t buffer;
   buffer_t *pbuffer = &buffer;
   buf_init(pbuffer, input);
+
+
+  test_stuff(pbuffer);
 
   ast_list_t *functions = parse(pbuffer);
   printf("\n\n\n");
