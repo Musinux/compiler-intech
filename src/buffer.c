@@ -194,7 +194,7 @@ char buf_getchar_rollback (buffer_t *buffer)
 void buf_print (buffer_t *buffer)
 {
   printf(COLOR_BLUE "#### <buffer> ####\n" COLOR_DEFAULT);
-  printf(COLOR_GREEN "it: %zu\nend: %zu\navail: %zu\nlock: %zu\n" COLOR_DEFAULT,
+  printf(COLOR_GREEN "it: %u\nend: %u\navail: %u\nlock: %u\n" COLOR_DEFAULT,
       buffer->it,
       buffer->end,
       buffer->avail,
