@@ -10,7 +10,13 @@
 bool isalphanum (char chr)
 {
   // TODO: commencer par implémenter isalphanum
-  if (chr == '_') return true;
+  if (chr == '_' ||
+      (chr >= '0' && chr <= '9') ||
+      (chr >= 'A' && chr <= 'Z') ||
+      (chr >= 'a' && chr <= 'z')
+    ) {
+     return true;
+  }
   // faire le reste
   return false;
 }
@@ -29,19 +35,43 @@ bool isalphanum (char chr)
  * Attention: si aucun caractère ne matchait, retourner NULL
  * 
  */
-char *lexer_getalphanum_rollback (buffer_t *buffer)
+char *lexer_getalphanum (buffer_t *buffer)
 {
   // boucle qui s'arrête lorsque l'on tombe sur un caractère
   // qui ne correspond pas à isalphanum()
   /*
-  tant que (buf_getchar(buffer) correspond à un caractère autorisé
-   par isalphanum(), alors
-      continuer
-  sinon s'arrêter
+    tant que (buf_getchar(buffer) correspond à un caractère autorisé
+      par isalphanum(), alors
+        continuer
+      sinon s'arrêter
 
-  créer une chaîne de caractères contenant les caractères qu'on
-   vient de lire
-  et retourner cette chaine
+    créer une chaîne de caractères contenant les caractères qu'on
+       vient de lire
+    et retourner cette chaine
   */
- return NULL;
+  char save[LEXEM_SIZE] = "";
+  size_t count = 0;
+  buf_lock(buffer);
+  do {
+    save[count] = buf_getchar(buffer);
+    count++;
+  } while (count < LEXEM_SIZE && isalphanum(save[count - 1]));
+
+  buf_rollback(buffer, 1);
+  buf_unlock(buffer);
+
+  if (count == LEXEM_SIZE) {
+    printf("Error parsing identifier: identifier too long!. exiting\n");
+    exit(1); // arrêt brutal du programme
+  }
+
+  char *out = malloc(sizeof(char) * count);
+  save[count - 1] = '\0';
+  strncpy(out, save, count);
+  
+  return out;
+}
+
+char *lexer_getalphanum_rollback (buffer_t *buffer)
+{
 }

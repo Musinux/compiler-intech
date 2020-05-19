@@ -22,7 +22,7 @@ bool isalphanum (char chr);
 /** lexer_getalphanum_rollback mallocs and rollbacks after read. **/
 char *lexer_getalphanum_rollback (buffer_t *buffer);
 /** lexer_getalphanum mallocs and rollbacks only if nothing was parsed. **/
-// char *lexer_getalphanum (buffer_t *buffer);
+char *lexer_getalphanum (buffer_t *buffer);
 /** lexer_getalpha mallocs and rollbacks only if nothing was parsed. **/
 // char *lexer_getalpha (buffer_t *buffer);
 /** lexer_getop mallocs and rollbacks only if nothing was parsed. **/

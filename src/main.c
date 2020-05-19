@@ -35,16 +35,9 @@ int suffix (const char *buffer, const char *endswith) {
 void test_stuff (buffer_t *buffer)
 {
   buf_skipblank(buffer);
-  buf_print(buffer);
-  char moncaractere = buf_getchar(buffer);
-  printf("moncaractère: '%c'\n", moncaractere);
-  moncaractere = buf_getchar(buffer);
-  printf("moncaractère (v2): '%c'\n", moncaractere);
-
-  buf_print(buffer);
-  // Vous pouvez ajouter toutes vos fonctions de test
   char *lexem = lexer_getalphanum_rollback(buffer);
-  printf("variable trouvée: %s\n", lexem);
+  printf("variable trouvée: '%s'\n", lexem);
+  buf_print(buffer);
 }
 
 int main (int argc, char **argv)
