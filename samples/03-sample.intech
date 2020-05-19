@@ -1,0 +1,9 @@
+
+fonction main () : entier {
+  entier compteur = 0;
+  tantque (compteur <= 10)
+  {
+    compteur = compteur + 1;
+  }
+  retourner compteur;
+}

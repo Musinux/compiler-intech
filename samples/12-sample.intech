@@ -1,0 +1,11 @@
+fonction main () : rien {
+  entier a = 1;
+  si (a < 1)
+  {
+    a = 2;
+  }
+  sinon
+  {
+    a = 3;
+  }
+}

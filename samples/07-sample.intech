@@ -1,0 +1,12 @@
+fonction main () : rien {
+  entier compteur = 0;
+  entier a = 1;
+  entier b = 2;
+  si (a < b) {
+    compteur = compteur + 1;
+  } sinon si (a > b) {
+    compteur = compteur + 2;
+  } sinon {
+    compteur = compteur + 3;
+  }
+}

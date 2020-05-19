@@ -1,0 +1,16 @@
+fonction operation (entier a, entier b) : entier {
+  retourner a + (a + b) * (a - b);
+}
+
+fonction main () : entier {
+  entier compteur = 0;
+  tantque (compteur <= 100)
+  {
+    si (compteur < 10)
+    {
+      compteur = compteur * 2 + 1 * 3;
+    }
+    compteur = compteur - 1;
+  }
+  retourner operation(compteur, compteur + 1);
+}

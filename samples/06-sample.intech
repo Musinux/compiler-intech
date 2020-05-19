@@ -1,0 +1,90 @@
+fonction whatever3 () : rien {
+  entier cpt = 0;
+  entier cpt2 = 0;
+  tantque (1) {
+    cpt = cpt + 1;
+    si (cpt >= 1000) {
+      tantque (cpt2 < 10000) {
+        cpt = cpt - 1;
+        cpt2 = cpt2 + 1;
+        si (cpt2 == cpt) {
+          si (cpt2 == 13) {
+            si (cpt == 13) {
+              retourner 1000;
+            } sinon retourner 100;
+          }
+        }
+      }
+      retourner 20;
+    }
+  }
+}
+
+fonction whatever2 () : rien {
+  entier cpt = 0;
+  entier cpt2 = 0;
+  tantque (cpt > 0 OU cpt2 > 0) {
+    cpt = cpt + 1;
+    si (cpt >= 1000) {
+      tantque (cpt2 < 10000) {
+        cpt = cpt - 1;
+        cpt2 = cpt2 + 1;
+        si (cpt2 == cpt) {
+          si (cpt2 == 13) {
+            si (cpt == 13) {
+              retourner 1000;
+            } sinon retourner 100;
+          }
+        }
+      }
+      retourner 20;
+    }
+  }
+}
+
+fonction whatever () : rien {
+  entier cpt = 0;
+  entier cpt2 = 0;
+  tantque (1) {
+    cpt = cpt + 1;
+    si (cpt >= 1000) {
+      tantque (cpt2 < 10000) {
+        cpt = cpt - 1;
+        cpt2 = cpt2 + 1;
+        si (cpt2 == cpt) {
+          si (cpt2 == 13) {
+            si (cpt == 13) {
+              retourner 1000;
+            } sinon retourner 100;
+          }
+        }
+      }
+      retourner 20;
+    }
+  }
+}
+
+fonction operation3 (entier a, entier b) : entier {
+  retourner a + (a + b) * (a - b);
+}
+
+fonction operation2 (entier a, entier b) : entier {
+  retourner a + (a + b) * (a - b);
+}
+
+fonction operation (entier a, entier b) : entier {
+  retourner operation2(a,b) + a + (a + b) * (a - b);
+}
+
+fonction main () : entier {
+  entier compteur = 0;
+  tantque (compteur <= 100)
+  {
+    si (compteur < 10)
+    {
+      compteur = compteur * 2 + 1 * 3;
+    }
+    compteur = compteur - 1;
+  }
+  retourner operation(compteur, compteur + 1);
+}
