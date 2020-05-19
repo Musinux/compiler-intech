@@ -201,7 +201,7 @@ void buf_print (buffer_t *buffer)
       buffer->avail,
       buffer->lock);
 #else
-printf(COLOR_GREEN "it: %zu\nend: %zu\navail: %zu\nlock: %zu\n" COLOR_DEFAULT,
+  printf(COLOR_GREEN "it: %zu\nend: %zu\navail: %zu\nlock: %zu\n" COLOR_DEFAULT,
       buffer->it,
       buffer->end,
       buffer->avail,

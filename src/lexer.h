@@ -6,7 +6,7 @@
 #define LEXEM_SIZE 60
 
 bool isalphanum (char chr);
-// bool isnumber (char chr);
+bool isnbr (char chr);
 // bool isop (char chr);
 
 // void lexer_assert_simplechar (buffer_t *buffer, char chr, char *msg);
@@ -28,6 +28,6 @@ char *lexer_getalphanum (buffer_t *buffer);
 /** lexer_getop mallocs and rollbacks only if nothing was parsed. **/
 // char *lexer_getop (buffer_t *buffer);
 /** lexer_getnumber mallocs and rollbacks only if nothing was parsed. **/
-// long lexer_getnumber (buffer_t *buffer);
+long lexer_getnumber (buffer_t *buffer);
 
 #endif /* ifndef LEXER_H */
