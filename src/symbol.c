@@ -6,8 +6,81 @@
 #include "ast.h"
 #include "utils.h"
 
+int next_id = 0;
 
-char * sym_get_symbol_type (sym_type_e type)
+symbol_t *sym_new_function (char *name, int type, ast_t *attributes, symbol_t *table)
+{
+  symbol_t *sym = sym_new(name, type, attributes);
+  sym->function_table = table;
+  return sym;
+}
+
+symbol_t *sym_new (char *name, int type, ast_t *attributes)
+{
+  symbol_t *sym = malloc(sizeof(symbol_t));
+
+  sym->name = copy_name(name);
+  sym->type = type;
+  sym->rel_pos = 0;
+  sym->function_table = NULL;
+  sym->attributes = attributes;
+  sym->next = NULL;
+  return sym;
+}
+
+void sym_delete (symbol_t * sym)
+{
+  if (!sym) return;
+  free(sym->name);
+  if (sym->attributes) // FIXME probably not the way to go
+    free(sym->attributes);
+  free(sym);
+}
+
+void sym_remove (symbol_t **table, symbol_t *sym)
+{
+  assert(sym);
+  assert(table);
+  symbol_t *curr = *table;
+  symbol_t *prec = NULL;
+  while (curr) {
+    if (sym == curr) {
+      if (!prec) *table = curr->next;
+      else prec->next = curr->next;
+      sym_delete(curr);
+      break;
+    }
+    prec = curr;
+    curr = curr->next;
+  }
+}
+
+void sym_add (symbol_t **table, symbol_t *sym)
+{
+  assert(sym);
+  assert(table);
+  if (!*table) {
+    *table = sym;
+    return;
+  }
+  symbol_t *curr = *table;
+
+  while (curr->next) curr = curr->next;
+  curr->next = sym;
+}
+
+symbol_t * sym_search (symbol_t *table, char *name)
+{
+  while (table) {
+    if (strcmp(table->name, name) == STREQUAL) {
+      return table;
+    }
+    table = table->next;
+  }
+  return NULL;
+}
+
+char * sym_get_symbol_type (sym_type_t type)
 {
   switch (type) {
     case SYM_FUNCTION: return "fonction";
