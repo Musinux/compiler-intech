@@ -26,6 +26,35 @@ bool isalphanum (char chr)
   // faire le reste
   return false;
 }
+void lexer_assert_openbracket (buffer_t *buffer, char *msg)
+{
+  char next = buf_getchar(buffer);
+  if (next != '{') {
+    printf("%s. exiting.\n", msg);
+    buf_print(buffer);
+    exit(1);
+  }
+}
+
+void lexer_assert_openbrace (buffer_t *buffer, char *msg)
+{
+  char next = buf_getchar(buffer);
+  if (next != '(') {
+    printf("%s. exiting.\n", msg);
+    buf_print(buffer);
+    exit(1);
+  }
+}
+
+void lexer_assert_twopoints (buffer_t *buffer, char *msg)
+{
+  char next = buf_getchar(buffer);
+  if (next != ':') {
+    printf("%s. exiting.\n", msg);
+    buf_print(buffer);
+    exit(1);
+  }
+}
 
 /**
  * Notre objectif est de lire le maximum de caractères
