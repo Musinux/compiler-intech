@@ -8,6 +8,15 @@
 
 int next_id = 0;
 
+
+static char *copy_name (char *name)
+{
+  size_t len = strlen(name) + 1;
+  char *out = malloc(sizeof(char) * len);
+  strncpy(out, name, len);
+  return out;
+}
+
 symbol_t *sym_new_function (char *name, int type, ast_t *attributes, symbol_t *table)
 {
   symbol_t *sym = sym_new(name, type, attributes);
