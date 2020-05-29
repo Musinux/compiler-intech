@@ -1,0 +1,4 @@
+
+fonction main (entier b, entier c) : rien {
+  entier a;
+}
