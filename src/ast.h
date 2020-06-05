@@ -105,7 +105,8 @@ ast_t *ast_new_condition (ast_t *condition, ast_t *valid, ast_t *invalid);
 ast_t *ast_new_loop (ast_t *condition, ast_t *stmt);
 ast_t *ast_new_return (ast_t *expr);
 
-// int ast_binary_priority (ast_t *ast);
+bool ast_is_binary (ast_t *ast);
+int ast_binary_priority (ast_t *ast);
 ast_list_t *ast_list_new_node (ast_t *elem);
 ast_list_t *ast_list_add (ast_list_t **list, ast_t *elem);
 char *ast_get_var_type (ast_t *ast);

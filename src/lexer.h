@@ -26,7 +26,7 @@ char *lexer_getalphanum (buffer_t *buffer);
 /** lexer_getalpha mallocs and rollbacks only if nothing was parsed. **/
 // char *lexer_getalpha (buffer_t *buffer);
 /** lexer_getop mallocs and rollbacks only if nothing was parsed. **/
-// char *lexer_getop (buffer_t *buffer);
+char *lexer_getop (buffer_t *buffer);
 /** lexer_getnumber mallocs and rollbacks only if nothing was parsed. **/
 long lexer_getnumber (buffer_t *buffer);
 

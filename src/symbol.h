@@ -1,6 +1,7 @@
 /* vim: set tabstop=4:softtabstop=4:shiftwidth=4 */
 #ifndef SYMBOL_H
 #define SYMBOL_H
+#include <stdbool.h>
 #include "ast.h"
 
 

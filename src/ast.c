@@ -208,6 +208,12 @@ char *ast_binary_to_string (ast_binary_e op)
   }
 }
 
+bool ast_is_binary (ast_t *ast)
+{
+  if (ast->type == AST_BINARY) return true;
+  return false;
+}
+
 void print_spaces(size_t n)
 {
   for (size_t i = 0; i < n; i++) printf(" ");
