@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
+#ifndef WIN32
 #include <unistd.h>
 #include <execinfo.h>
-
+#endif
 
 char *copy_name (char *name)
 {
@@ -14,6 +15,7 @@ char *copy_name (char *name)
 
 void print_backtrace ()
 {
+#ifndef WIN32
   void *array[10];
   size_t size;
 
@@ -22,4 +24,5 @@ void print_backtrace ()
 
   // print out all the frames to stderr
   backtrace_symbols_fd(array, size, STDERR_FILENO);
+#endif /* WIN32 */
 }
