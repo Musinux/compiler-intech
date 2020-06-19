@@ -1,0 +1,23 @@
+
+fonction main (entier c, entier d) : entier {
+  entier a = 1;
+  entier b;
+  entier e;
+  a = 2;
+  si (a == 2) {
+    b = 3;
+    si (b == 3) {
+      e = 4;
+    }
+    sinon {
+      e = 5;
+    }
+  } sinon si (a == 1) {
+    b = 4;
+    si (b == 4) {
+      e = 6;
+    }
+  }
+
+  retourner b;
+}

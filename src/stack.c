@@ -12,10 +12,12 @@ stack_item_t *stack_new_item (void *data)
   item->next = NULL;
   return item;
 }
+
 bool stack_isempty (mystack_t stack)
 {
   return !stack;
 }
+
 void stack_push (mystack_t *stack, void *data)
 {
   assert(stack != NULL);

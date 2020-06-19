@@ -5,153 +5,133 @@
 #include "lexer.h"
 #include "buffer.h"
 
-bool isnbr (char chr)
-{
-  return (chr >= '0' && chr <= '9') || chr == '-';
-}
-
-// prend 1 caractère en paramètre
-// et retourne vrai s'il correspond à un chiffre, une lettre,
-// ou un underscore
 bool isalphanum (char chr)
 {
-  // TODO: commencer par implémenter isalphanum
-  if (chr == '_' ||
-      (chr >= '0' && chr <= '9') ||
-      (chr >= 'A' && chr <= 'Z') ||
-      (chr >= 'a' && chr <= 'z')
-    ) {
-     return true;
-  }
-  // faire le reste
-  return false;
+  return
+    (chr >= 'a' && chr <= 'z') ||
+    (chr >= 'A' && chr <= 'Z') ||
+    (chr >= '0' && chr <= '9') ||
+    chr == '_';
 }
-void lexer_assert_openbracket (buffer_t *buffer, char *msg)
+
+bool isnumber (char chr)
 {
-  char next = buf_getchar(buffer);
-  if (next != '{') {
-    printf("%s. exiting.\n", msg);
+  return ((chr >= '0' && chr <= '9') || chr == '-');
+}
+
+bool isop (char chr)
+{
+  return 
+    (chr == '=' || chr == '!' ||
+     chr == '<' || chr == '>' ||
+     chr == '+' || chr == '-' || chr == '*' || chr == '/' ||
+     chr == 'E' || chr == 'T' ||
+     chr == 'O' || chr == 'U'
+    );
+}
+
+void lexer_assert_simplechar (buffer_t *buffer, char chr, char *msg)
+{
+  if (buf_getchar_after_blank(buffer) != chr) {
+    printf("%s.\n", msg);
     buf_print(buffer);
     exit(1);
   }
 }
 
-void lexer_assert_openbrace (buffer_t *buffer, char *msg)
+void lexer_assert_blank (buffer_t *buffer, char *msg)
 {
-  char next = buf_getchar(buffer);
-  if (next != '(') {
-    printf("%s. exiting.\n", msg);
+  if (!ISBLANK(buf_getchar(buffer))) {
+    printf("%s.\n", msg);
+    buf_print(buffer);
+    exit(1);
+  }
+}
+
+void lexer_assert_newline (buffer_t *buffer, char *msg)
+{
+  if (buf_getchar(buffer) != '\n') {
+    printf("%s.\n", msg);
     buf_print(buffer);
     exit(1);
   }
 }
 
 void lexer_assert_twopoints (buffer_t *buffer, char *msg)
+{ lexer_assert_simplechar(buffer, ':', msg); }
+
+void lexer_assert_semicolon (buffer_t *buffer, char *msg)
+{ lexer_assert_simplechar(buffer, ';', msg); }
+
+void lexer_assert_openbrace (buffer_t *buffer, char *msg)
+{ lexer_assert_simplechar(buffer, '(', msg); }
+
+void lexer_assert_closebrace (buffer_t *buffer, char *msg)
+{ lexer_assert_simplechar(buffer, ')', msg); }
+
+void lexer_assert_openbracket (buffer_t *buffer, char *msg)
+{ lexer_assert_simplechar(buffer, '{', msg); }
+
+void lexer_assert_closebracket (buffer_t *buffer, char *msg)
+{ lexer_assert_simplechar(buffer, '}', msg); }
+
+void lexer_assert_equalsign (buffer_t *buffer, char *msg)
+{ lexer_assert_simplechar(buffer, '=', msg); }
+
+static
+char *lexer_get(buffer_t *buffer, char *lexem, size_t lexer_size,
+    bool (*discriminator)(char))
 {
-  char next = buf_getchar(buffer);
-  if (next != ':') {
-    printf("%s. exiting.\n", msg);
-    buf_print(buffer);
-    exit(1);
+  buf_skipblank(buffer);
+  size_t count = 0;
+  char *out = NULL;
+  char chr;
+  bool waslocked = true;
+  if (!buffer->islocked) {
+    buf_lock(buffer);
+    waslocked = false;
   }
+
+  while (count < lexer_size && discriminator(chr = buf_getchar(buffer)))
+    lexem[count++] = chr;
+
+  if (count < lexer_size)
+    buf_rollback(buffer, 1);
+
+  if (count > 0) {
+    lexem[count] = '\0';
+    out = malloc(sizeof(char) * (count + 1));
+    strncpy(out, lexem, count + 1);
+  }
+  if (!waslocked)
+    buf_unlock(buffer);
+  return out;
 }
 
-/**
- * Notre objectif est de lire le maximum de caractères
- * tant que ceux-ci correspondent aux possibilités suivantes:
- *  * a-z
- *  * A-Z 
- *  * 0-9
- *  * _
- * Lorsqu'on a trouvé une suite de caractères qui matchent
- * allouer de la mémoire (malloc) et copier ces caractères dedans
- * retourner l'espace alloué
- * 
- * Attention: si aucun caractère ne matchait, retourner NULL
- * 
- */
+char *lexer_getnumber (buffer_t *buffer)
+{
+  char lexem[LEXEM_SIZE + 1];
+  return lexer_get(buffer, lexem, LEXEM_SIZE, isnumber);
+}
+
 char *lexer_getalphanum (buffer_t *buffer)
 {
-  // boucle qui s'arrête lorsque l'on tombe sur un caractère
-  // qui ne correspond pas à isalphanum()
-  /*
-    tant que (buf_getchar(buffer) correspond à un caractère autorisé
-      par isalphanum(), alors
-        continuer
-      sinon s'arrêter
-
-    créer une chaîne de caractères contenant les caractères qu'on
-       vient de lire
-    et retourner cette chaine
-  */
-  char save[LEXEM_SIZE] = "";
-  size_t count = 0;
-  buf_lock(buffer);
-  do {
-    save[count] = buf_getchar(buffer);
-    count++;
-  } while (count < LEXEM_SIZE && isalphanum(save[count - 1]));
-
-  buf_rollback(buffer, 1);
-  buf_unlock(buffer);
-
-  if (count == LEXEM_SIZE) {
-    printf("Error parsing identifier: identifier too long!. exiting\n");
-    exit(1); // arrêt brutal du programme
-  }
-
-  char *out = malloc(sizeof(char) * count);
-  save[count - 1] = '\0';
-  strncpy(out, save, count);
-  
-  return out;
+  char lexem[LEXEM_SIZE + 1];
+  return lexer_get(buffer, lexem, LEXEM_SIZE, isalphanum);
 }
 
 char *lexer_getalphanum_rollback (buffer_t *buffer)
 {
-  char save[LEXEM_SIZE] = "";
-  size_t count = 0;
+  char lexem[LEXEM_SIZE + 1];
   buf_lock(buffer);
-  do {
-    save[count] = buf_getchar(buffer);
-    count++;
-  } while (count < LEXEM_SIZE && isalphanum(save[count - 1]));
-
-  buf_rollback(buffer, count);
+  char *out = lexer_get(buffer, lexem, LEXEM_SIZE, isalphanum);
+  if (out) buf_rollback(buffer, strlen(out));
   buf_unlock(buffer);
-
-  if (count == LEXEM_SIZE) {
-    printf("Error parsing identifier: identifier too long!. exiting\n");
-    exit(1); // arrêt brutal du programme
-  }
-
-  char *out = malloc(sizeof(char) * count);
-  save[count - 1] = '\0';
-  strncpy(out, save, count);
-  
   return out;
 }
 
-long lexer_getnumber (buffer_t *buffer)
+char *lexer_getop (buffer_t *buffer)
 {
-  char save[LEXEM_SIZE] = "";
-  size_t count = 0;
-  buf_lock(buffer);
-  do {
-    save[count] = buf_getchar(buffer);
-    count++;
-  } while (count < LEXEM_SIZE && isnbr(save[count - 1]));
-
-  buf_rollback(buffer, 1);
-  buf_unlock(buffer);
-
-  if (count == LEXEM_SIZE) {
-    printf("Error parsing identifier: identifier too long!. exiting\n");
-    exit(1); // arrêt brutal du programme
-  }
-
-  save[count - 1] = '\0';
-  long out = strtol(save, NULL, 10);
-  
-  return out;
+  char lexem[3] = "";
+  return lexer_get(buffer, lexem, 2, isop);
 }

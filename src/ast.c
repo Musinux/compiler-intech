@@ -1,3 +1,4 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4 */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,14 +9,6 @@
 #include "parser.h"
 #include "ast.h"
 #include "utils.h"
-
-char *copy_name (char *name)
-{
-  size_t len = (strlen(name) + 1);
-  char *out = malloc(sizeof(char) * len);
-  strncpy(out, name, len);
-  return out;
-}
 
 ast_t *ast_new_integer (long val)
 {
@@ -43,7 +36,7 @@ ast_t *ast_new_variable (char *name, int type) {
   return ast;
 }
 
-ast_t *ast_new_unary (char op, ast_t *operand)
+ast_t *ast_new_unary (ast_unary_e op, ast_t *operand)
 {
   ast_t * ast = malloc(sizeof(ast_t));
   ast->type = AST_UNARY;
@@ -98,10 +91,10 @@ ast_t *ast_new_assignment (ast_t *lvalue, ast_t *rvalue)
   return ast;
 }
 
-ast_t *ast_new_condition (ast_t *condition, ast_t *valid, ast_t *invalid)
+ast_t *ast_new_branch (ast_t *condition, ast_t *valid, ast_t *invalid)
 {
   ast_t * ast = malloc(sizeof(ast_t));
-  ast->type = AST_CONDITION;
+  ast->type = AST_BRANCH;
   ast->branch.condition = condition;
   ast->branch.valid = valid;
   ast->branch.invalid = invalid;
@@ -186,6 +179,56 @@ int ast_binary_priority (ast_t *ast)
   }
 }
 
+char *ast_cmp_to_string (ast_binary_e op)
+{
+  switch(op) {
+    case AST_BIN_LT: return "LT";
+    case AST_BIN_LTE: return "LTE";
+    case AST_BIN_GT: return "GT";
+    case AST_BIN_GTE: return "GTE";
+    case AST_BIN_EQ: return "EQ";
+    case AST_BIN_DIFF: return "NEQ";
+    default:
+      return NULL;
+  }
+}
+
+bool ast_is_arithmetic (ast_binary_e op)
+{
+  switch (op)
+  {
+  case AST_BIN_PLUS:
+  case AST_BIN_MINUS:
+  case AST_BIN_MULT:
+  case AST_BIN_DIV: return true;
+  default: return false;
+  }
+}
+
+bool ast_is_cmp (ast_binary_e op)
+{
+  return ast_inv_cmp(op) != AST_BIN_INVALID_OP;
+}
+
+bool ast_is_bool (ast_binary_e op)
+{
+  return op == AST_BIN_AND || op == AST_BIN_OR;
+}
+
+ast_binary_e ast_inv_cmp (ast_binary_e op)
+{
+  switch (op) {
+    case AST_BIN_LT: return AST_BIN_GTE;
+    case AST_BIN_LTE: return AST_BIN_GT;
+    case AST_BIN_GT: return AST_BIN_LTE;
+    case AST_BIN_GTE: return AST_BIN_LT;
+    case AST_BIN_EQ: return AST_BIN_DIFF;
+    case AST_BIN_DIFF: return AST_BIN_EQ;
+    default:
+      return AST_BIN_INVALID_OP;
+  }
+}
+
 char *ast_binary_to_string (ast_binary_e op)
 {
   switch (op)
@@ -206,12 +249,6 @@ char *ast_binary_to_string (ast_binary_e op)
     printf("unknown binary operator. exiting.\n");
     exit(1);
   }
-}
-
-bool ast_is_binary (ast_t *ast)
-{
-  if (ast->type == AST_BINARY) return true;
-  return false;
 }
 
 void print_spaces(size_t n)
@@ -281,7 +318,7 @@ int ast_print_ (ast_t *ast, size_t indent)
   case AST_VARIABLE:
     printf("%s: %s%n", ast->var.name, ast_get_var_type(ast), &written);
     break;
-  case AST_CONDITION:
+  case AST_BRANCH:
     printf("if (%n\n", &written);
     print_spaces(indent + written);
     ast_print_(ast->branch.condition, indent + written);
@@ -331,7 +368,7 @@ int ast_print_ (ast_t *ast, size_t indent)
   case AST_RETURN:
     // print_spaces(indent);
     printf("return: %n", &written);
-    ast_print_(ast->ret.expr, indent + written + 3);
+    ast_print_(ast->ret.expr, indent + written);
     break;
   }
   return indent + written;

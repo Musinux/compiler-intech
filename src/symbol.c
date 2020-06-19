@@ -2,21 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <stdbool.h>
 #include "symbol.h"
 #include "ast.h"
 #include "utils.h"
 
 int next_id = 0;
-
-
-static char *copy_name (char *name)
-{
-  size_t len = strlen(name) + 1;
-  char *out = malloc(sizeof(char) * len);
-  strncpy(out, name, len);
-  return out;
-}
 
 symbol_t *sym_new_function (char *name, int type, ast_t *attributes, symbol_t *table)
 {

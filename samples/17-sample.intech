@@ -1,0 +1,9 @@
+fonction main () : rien {
+  entier a = 2;
+  entier b = 3;
+  entier c = 2;
+  si ((a < b ET b < c) OU a > c) {
+    a = 4;
+  }
+  b = 4;
+}

@@ -1,0 +1,34 @@
+operation:
+	ADD_STACK $24
+	LOAD_ARG $8 a
+	LOAD_ARG $16 b
+	tmp0 = a + b
+	tmp1 = a - b
+	tmp2 = tmp0 * tmp1
+	tmp0 = a + tmp2
+	RETURN tmp0
+main:
+	ADD_STACK $16
+	DECL_LOCAL $8 compteur
+	ASSIGN $0 compteur
+L0:
+	COMPARE $100 compteur
+	JUMP_LTE L2
+L1:
+	COMPARE $10 compteur
+	JUMP_LT L3
+L4:
+	tmp1 = compteur * $2
+	tmp2 = $1 * $3
+	tmp0 = tmp1 + tmp2
+	ASSIGN tmp0 compteur
+L3:
+	tmp1 = compteur - $1
+	ASSIGN tmp1 compteur
+	JUMP L0
+L2:
+	tmp2 = compteur + $1
+	PARAM compteur
+	PARAM tmp2
+	CALL operation tmp0
+	RETURN tmp0

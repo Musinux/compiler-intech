@@ -1,0 +1,39 @@
+main:
+	ADD_STACK $24
+	DECL_LOCAL $8 cpt
+	DECL_LOCAL $16 cpt2
+	ASSIGN $0 cpt
+	ASSIGN $0 cpt2
+L0:
+	tmp0 = $1 != $0
+	JUMP_IF_FALSE L1
+	tmp0 = cpt + $1
+	ASSIGN tmp0 cpt
+	tmp0 = cpt >= $1000
+	JUMP_IF_FALSE L2
+L3:
+	tmp0 = cpt2 < $10000
+	JUMP_IF_FALSE L4
+	tmp0 = cpt - $1
+	ASSIGN tmp0 cpt
+	tmp0 = cpt2 + $1
+	ASSIGN tmp0 cpt2
+	tmp0 = cpt2 == cpt
+	JUMP_IF_FALSE L5
+	tmp0 = cpt2 == $13
+	JUMP_IF_FALSE L6
+	tmp0 = cpt == $13
+	JUMP_IF_FALSE L8
+	RETURN $1000
+	JUMP L7
+L8:
+	RETURN $100
+L7:
+L6:
+L5:
+	JUMP L3
+L4:
+	RETURN $20
+L2:
+	JUMP L0
+L1:

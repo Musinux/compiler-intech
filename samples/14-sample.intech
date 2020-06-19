@@ -1,0 +1,10 @@
+fonction operation2 (entier a, entier b) : entier {
+  retourner a / b;
+}
+fonction operation (entier a, entier b) : entier {
+  retourner a - b;
+}
+
+fonction main (entier a, entier b) : entier {
+  retourner a + (a + b) * operation(operation2(a, b), b);
+}

@@ -1,0 +1,173 @@
+whatever3:
+	ADD_STACK 16
+	LOAD_LOCAL 0 cpt
+	LOAD_LOCAL 8 cpt2
+	ASSIGN $0 cpt
+	ASSIGN $0 cpt2
+L0:
+	tmp0 = $1 != $0
+	JUMP_IF_FALSE L1
+	tmp0 = cpt + $1
+	ASSIGN tmp0 cpt
+	tmp0 = cpt >= $1000
+	JUMP_IF_FALSE L2
+L3:
+	tmp0 = cpt2 < $10000
+	JUMP_IF_FALSE L4
+	tmp0 = cpt - $1
+	ASSIGN tmp0 cpt
+	tmp0 = cpt2 + $1
+	ASSIGN tmp0 cpt2
+	tmp0 = cpt2 == cpt
+	JUMP_IF_FALSE L5
+	tmp0 = cpt2 == $13
+	JUMP_IF_FALSE L6
+	tmp0 = cpt == $13
+	JUMP_IF_FALSE L8
+	RETURN $1000
+	JUMP L7
+L8:
+	RETURN $100
+L7:
+L6:
+L5:
+	JUMP L3
+L4:
+	RETURN $20
+L2:
+	JUMP L0
+L1:
+whatever2:
+	ADD_STACK 16
+	LOAD_LOCAL 0 cpt
+	LOAD_LOCAL 8 cpt2
+	ASSIGN $0 cpt
+	ASSIGN $0 cpt2
+L9:
+	tmp0 = cpt > $0
+	tmp1 = cpt2 > $0
+	tmp2 = tmp0 OU tmp1
+	JUMP_IF_FALSE L10
+	tmp0 = cpt + $1
+	ASSIGN tmp0 cpt
+	tmp1 = cpt >= $1000
+	JUMP_IF_FALSE L11
+L12:
+	tmp2 = cpt2 < $10000
+	JUMP_IF_FALSE L13
+	tmp0 = cpt - $1
+	ASSIGN tmp0 cpt
+	tmp1 = cpt2 + $1
+	ASSIGN tmp1 cpt2
+	tmp2 = cpt2 == cpt
+	JUMP_IF_FALSE L14
+	tmp0 = cpt2 == $13
+	JUMP_IF_FALSE L15
+	tmp1 = cpt == $13
+	JUMP_IF_FALSE L17
+	RETURN $1000
+	JUMP L16
+L17:
+	RETURN $100
+L16:
+L15:
+L14:
+	JUMP L12
+L13:
+	RETURN $20
+L11:
+	JUMP L9
+L10:
+whatever:
+	ADD_STACK 16
+	LOAD_LOCAL 0 cpt
+	LOAD_LOCAL 8 cpt2
+	ASSIGN $0 cpt
+	ASSIGN $0 cpt2
+L18:
+	tmp2 = $1 != $0
+	JUMP_IF_FALSE L19
+	tmp0 = cpt + $1
+	ASSIGN tmp0 cpt
+	tmp1 = cpt >= $1000
+	JUMP_IF_FALSE L20
+L21:
+	tmp2 = cpt2 < $10000
+	JUMP_IF_FALSE L22
+	tmp0 = cpt - $1
+	ASSIGN tmp0 cpt
+	tmp1 = cpt2 + $1
+	ASSIGN tmp1 cpt2
+	tmp2 = cpt2 == cpt
+	JUMP_IF_FALSE L23
+	tmp0 = cpt2 == $13
+	JUMP_IF_FALSE L24
+	tmp1 = cpt == $13
+	JUMP_IF_FALSE L26
+	RETURN $1000
+	JUMP L25
+L26:
+	RETURN $100
+L25:
+L24:
+L23:
+	JUMP L21
+L22:
+	RETURN $20
+L20:
+	JUMP L18
+L19:
+operation3:
+	ADD_STACK 16
+	LOAD_ARG 0 a
+	LOAD_ARG 8 b
+	tmp2 = a + b
+	tmp0 = a - b
+	tmp1 = tmp2 * tmp0
+	tmp2 = a + tmp1
+	RETURN tmp2
+operation2:
+	ADD_STACK 16
+	LOAD_ARG 0 a
+	LOAD_ARG 8 b
+	tmp0 = a + b
+	tmp1 = a - b
+	tmp2 = tmp0 * tmp1
+	tmp0 = a + tmp2
+	RETURN tmp0
+operation:
+	ADD_STACK 16
+	LOAD_ARG 0 a
+	LOAD_ARG 8 b
+	PARAM a
+	PARAM b
+	CALL operation2 tmp1
+	tmp2 = a + b
+	tmp0 = a - b
+	tmp3 = tmp2 * tmp0
+	tmp2 = a + tmp3
+	tmp0 = tmp1 + tmp2
+	RETURN tmp0
+main:
+	ADD_STACK 8
+	LOAD_LOCAL 0 compteur
+	ASSIGN $0 compteur
+L27:
+	tmp3 = compteur <= $100
+	JUMP_IF_FALSE L28
+	tmp1 = compteur < $10
+	JUMP_IF_FALSE L29
+	tmp2 = compteur * $2
+	tmp0 = $1 * $3
+	tmp3 = tmp2 + tmp0
+	ASSIGN tmp3 compteur
+L29:
+	tmp1 = compteur - $1
+	ASSIGN tmp1 compteur
+	JUMP L27
+L28:
+	tmp2 = compteur + $1
+	PARAM compteur
+	PARAM tmp2
+	CALL operation tmp0
+	RETURN tmp0

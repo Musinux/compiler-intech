@@ -1,0 +1,21 @@
+fonction main () : entier {
+  entier cpt = 0;
+  entier cpt2 = 0;
+  tantque (1 == 1) {
+    cpt = cpt + 1;
+    si (cpt >= 1000) {
+      tantque (cpt2 < 10000) {
+        cpt = cpt - 1;
+        cpt2 = cpt2 + 1;
+        si (cpt2 == cpt) {
+          si (cpt2 == 13) {
+            si (cpt == 13) {
+              retourner 1000;
+            } sinon retourner 100;
+          }
+        }
+      }
+      retourner 20;
+    }
+  }
+}

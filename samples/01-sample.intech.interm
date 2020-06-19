@@ -1,0 +1,7 @@
+main:
+	ADD_STACK $32
+	LOAD_ARG $8 b
+	LOAD_ARG $16 c
+	DECL_LOCAL $24 a
+	ASSIGN $1 a
+	ASSIGN $2 a

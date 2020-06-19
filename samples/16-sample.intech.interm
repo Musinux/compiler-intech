@@ -1,0 +1,47 @@
+main:
+	ADD_STACK $24
+	DECL_LOCAL $8 cpt
+	DECL_LOCAL $16 cpt2
+	ASSIGN $0 cpt
+	ASSIGN $0 cpt2
+L0:
+	tmp0 = $1
+	COMPARE $1 tmp0
+	JUMP_NEQ L2
+L1:
+	tmp0 = cpt + $1
+	ASSIGN tmp0 cpt
+	COMPARE $1000 cpt
+	JUMP_GTE L3
+L4:
+L5:
+	COMPARE $10000 cpt2
+	JUMP_LT L7
+L6:
+	tmp0 = cpt - $1
+	ASSIGN tmp0 cpt
+	tmp0 = cpt2 + $1
+	ASSIGN tmp0 cpt2
+	tmp0 = cpt2
+	COMPARE tmp0 cpt
+	JUMP_NEQ L8
+L9:
+	COMPARE $13 cpt2
+	JUMP_NEQ L10
+L11:
+	COMPARE $13 cpt
+	JUMP_NEQ L14
+L13:
+	RETURN $1000
+	JUMP L12
+L14:
+	RETURN $100
+L12:
+L10:
+L8:
+	JUMP L5
+L7:
+	RETURN $20
+L3:
+	JUMP L0
+L2:

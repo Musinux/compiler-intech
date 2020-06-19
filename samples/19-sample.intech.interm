@@ -1,0 +1,23 @@
+main:
+	ADD_STACK $32
+	DECL_LOCAL $8 a
+	DECL_LOCAL $16 b
+	DECL_LOCAL $24 c
+	ASSIGN $2 a
+	ASSIGN $3 b
+	ASSIGN $2 c
+	tmp0 = a
+	COMPARE tmp0 b
+	JUMP_LT L2
+L3:
+	tmp0 = b
+	COMPARE tmp0 c
+	JUMP_GTE L0
+L2:
+	tmp0 = a
+	COMPARE tmp0 c
+	JUMP_LTE L0
+L1:
+	ASSIGN $4 a
+L0:
+	ASSIGN $4 b

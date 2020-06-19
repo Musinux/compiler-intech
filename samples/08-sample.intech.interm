@@ -1,0 +1,34 @@
+main:
+	ADD_STACK $32
+	DECL_LOCAL $8 a
+	DECL_LOCAL $16 b
+	DECL_LOCAL $24 c
+	ASSIGN $1 a
+	ASSIGN $2 b
+	ASSIGN $2 c
+	tmp0 = a
+	COMPARE tmp0 b
+	JUMP_LT L1
+L2:
+	tmp0 = $1 + $3
+	COMPARE tmp0 b
+	JUMP_GT L0
+L3:
+	tmp0 = c * $3
+	tmp1 = tmp0 + $1
+	tmp0 = $3 * $4
+	tmp2 = tmp0 + $-3
+	COMPARE tmp1 tmp2
+	JUMP_EQ L0
+L1:
+	tmp0 = a + $1
+	ASSIGN tmp0 a
+L0:
+	tmp1 = $3 * $4
+	tmp2 = tmp1 + $-3
+	COMPARE $1 tmp2
+	JUMP_EQ L4
+L5:
+	tmp0 = a + $1
+	ASSIGN tmp0 a
+L4:
