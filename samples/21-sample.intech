@@ -1,0 +1,7 @@
+fonction main (entier a, entier b, entier c) : entier {
+  entier d = 5;
+  si ((a < b OU b < c) OU a > c) {
+    d = 6;
+  }
+  retourner d;
+}
