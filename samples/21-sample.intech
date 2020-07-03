@@ -1,7 +1,9 @@
 fonction main (entier a, entier b, entier c) : entier {
-  entier d = 5;
-  si ((a < b OU b < c) OU a > c) {
-    d = 6;
+  entier d = a + b + c;
+
+  si (d > 100) {
+    retourner 100;
   }
+  
   retourner d;
 }

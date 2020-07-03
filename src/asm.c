@@ -290,6 +290,8 @@ void asm_return (buffer_t *buffer, asm_symbol_t *table, FILE *outfile)
   if (asm_sym_search(table, lexem)) {
     asm_symbol_t *var = asm_getvar(buffer, table);
     asm_instr_var_to_register("movq", var, "%rax", outfile);
+    fprintf(outfile, "\tleave\n"
+                     "\tret\n");
     return;
   }
 
@@ -298,6 +300,8 @@ void asm_return (buffer_t *buffer, asm_symbol_t *table, FILE *outfile)
   free(tmp);
 
   asm_instr_register_to_register("movq", reg, "%rax", outfile);
+  fprintf(outfile, "\tleave\n"
+                   "\tret\n");
 }
 
 /**
@@ -522,7 +526,7 @@ void asm_call (buffer_t *buffer, asm_symbol_t *table, int *param_count, FILE *ou
  *      Both registers are needed to define the current function' address space
  *  - a simple numbered label, which is only useful for JUMP instructions
  */
-void asm_label (buffer_t *buffer, FILE *outfile, int *arg_count)
+void asm_label (buffer_t *buffer, FILE *outfile, int *arg_count, bool *is_main)
 {
   if (DEBUG) printf("asm_label\n");
   char *label = lexer_getalphanum(buffer);
@@ -534,19 +538,82 @@ void asm_label (buffer_t *buffer, FILE *outfile, int *arg_count)
     fprintf(outfile, ".%s:\n", label);
   }
   else {
-    *arg_count = 0;
-    /* 
-     * This is the function prolog, storing the previous %rbp,
-     * and setting the new %rbp to the previous %rsp
-     * Which means: save the previous base address, and set the base address at the top of the stack, which is used to refer to local variables.
-     */
-    fprintf(outfile,
-        "%s:\n"
+    if (strcmp(label, "main") == 0) {
+      fprintf(outfile,
+        "real_main:\n"
         "\tpushq\t%%rbp\n"
-        "\tmovq\t%%rsp, %%rbp\n",
-        label);
+        "\tmovq\t%%rsp, %%rbp\n");
+      *is_main = true;
+    }
+    else {
+      *is_main = false;
+      *arg_count = 0;
+      /* 
+      * This is the function prolog, storing the previous %rbp,
+      * and setting the new %rbp to the previous %rsp
+      * Which means: save the previous base address, and set the base address at the top of the stack, which is used to refer to local variables.
+      */
+      fprintf(outfile,
+          "%s:\n"
+          "\tpushq\t%%rbp\n"
+          "\tmovq\t%%rsp, %%rbp\n",
+          label);
+    }
   }
   free(label);
+}
+
+void asm_program_arguments (buffer_t *buffer, FILE *outfile, int arg_count)
+{
+  fprintf(outfile, ".LC0:\n");
+  fprintf(outfile, "\t.string \"%%d\\n\"\n");
+  fprintf(outfile,
+    "main:\n"
+    "\tpushq\t%%rbp\n"
+    "\tmovq\t%%rsp, %%rbp\n");
+  
+  /** nombre d'arguments de notre programme + variables argc et argv et %rbp **/
+  fprintf(outfile, "\tsubq\t$%d, %%rsp\n", (arg_count + 2 + 1) * 8);
+
+  char argv[] = "-16(%rbp)";
+  // chargement de argc dans une variable locale
+  fprintf(outfile, "\tmovq\t%s, -8(%%rbp)\n", call_registers[0]);
+  // chargement de argv dans une variable locale
+  fprintf(outfile, "\tmovq\t%s, %s\n", call_registers[1], argv);
+
+  for (int i = 0; i < arg_count; i++) {
+    // movq	-48(%rbp), %rax # on déplace argv dans %rax
+    fprintf(outfile, "\tmovq %s, %%rax\n", argv);
+    // déplacement dans le tableau argv, on commence à l'index 1 plutôt que 0
+    // car l'index 0... c'est le nom du programme lui-même
+    fprintf(outfile, "\taddq\t$%d, %%rax\n", 8 * (i + 1));
+    // movq	(%rax), %rax    # et on charge le contenu à l'adresse de %rax argv[0]
+    fprintf(outfile, "\tmovq\t(%%rax), %%rax\n");
+    // movl	$10, %edx
+    fprintf(outfile, "\tmovq\t$10, %s\n", call_registers[2]);
+    // movl	$0, %esi
+    fprintf(outfile, "\tmovq\t$0, %s\n", call_registers[1]);
+    // movq	%rax, %rdi
+    fprintf(outfile, "\tmovq\t%%rax, %s\n", call_registers[0]);
+    // call	strtol@PLT # strtol(%rdi = argv[0], %rsi = NULL, %rdx = 10);
+    fprintf(outfile, "\tcall	strtol@PLT\n");
+    // movq	%rax, -8(%rbp)
+    fprintf(outfile, "\tmovq\t%%rax, -%d(%%rbp)\n", (i + 3) * 8);
+  }
+
+  for (int i = 0; i < arg_count; i++) {
+    fprintf(outfile, "\tmovq\t-%d(%%rbp), %s\n", (i + 3) * 8, call_registers[i]);
+  }
+
+  fprintf(outfile, "\tcall real_main\n");
+  // représente le résultat de real_main:
+  fprintf(outfile, "\tmovq\t%%rax, %s\n", call_registers[1]);
+  // représente la string "%d\n"
+  fprintf(outfile, "\tleaq	.LC0(%%rip), %s\n", call_registers[0]);
+  fprintf(outfile, "\tcall printf@PLT\n");
+  fprintf(outfile,
+    "\tleave\n"
+    "\tret\n");
 }
 
 /**
@@ -556,6 +623,9 @@ void asm_generator (buffer_t *buffer, FILE *outfile)
 {
   int arg_count = 0;
   int param_count = 0;
+  bool is_main = false;
+  bool was_main = false;
+  bool main_created = false;
   fprintf(outfile, "\t.globl\tmain\n");
   asm_symbol_t *table = NULL;
   do {
@@ -563,7 +633,12 @@ void asm_generator (buffer_t *buffer, FILE *outfile)
     char next = buf_getchar(buffer);
     buf_rollback_and_unlock(buffer, 1);
     if (next != '\t') {
-      asm_label(buffer, outfile, &arg_count);
+      if (was_main == true && is_main == false) {
+        main_created = true;
+        asm_program_arguments(buffer, outfile, arg_count);
+      }
+      was_main = is_main;
+      asm_label(buffer, outfile, &arg_count, &is_main);
       continue;
     }
 
@@ -602,5 +677,9 @@ void asm_generator (buffer_t *buffer, FILE *outfile)
         "asm_instruction: Instruction should end with a '\\n'. exiting.\n");
     free(lexem);
   } while (!buf_eof_strict(buffer));
+
+  if (!main_created) {
+    asm_program_arguments(buffer, outfile, arg_count);
+  }
 }
 
